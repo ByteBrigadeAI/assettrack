@@ -1,11 +1,5 @@
 name: Application checks
-on:
-  push:
-    branches: [demo-baseline]
-    paths: ["services/**", ".github/workflows/ci.yml"]
-  pull_request:
-    branches: [demo-baseline]
-  workflow_dispatch:
+on: workflow_dispatch
 permissions:
   contents: read
 concurrency:
@@ -38,6 +32,10 @@ jobs:
           ASTRO_TELEMETRY_DISABLED: "1"
   java-build:
     runs-on: ubuntu-latest
+    env:
+      WORKFORCE_DB_PATH: /tmp/workforce-demo.db
+      AUDIT_DB_PATH: /tmp/audit-demo.db
+      AUTH_DB_PATH: /tmp/auth-demo.db
     strategy:
       fail-fast: false
       matrix:

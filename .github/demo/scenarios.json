@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "repository": "ByteBrigadeAI/assettrack",
+  "labels": {
+    "demo:agent": "Ready to assign to Copilot during a live demo",
+    "demo:review": "Open pull request for a code-review demo",
+    "demo:security": "Intentional synthetic security exercise",
+    "demo:ci": "Continuous integration investigation demo",
+    "demo:feature": "Feature implementation exercise",
+    "demo:bug": "Reproducible seeded defect",
+    "demo:tests": "Test generation or regression testing exercise",
+    "demo:quality": "Maintainability and reliability demo with real CodeQL findings"
+  },
+  "issues": [
+    {
+      "key": "fix-retired-and-lost-status-badge-colors",
+      "title": "Fix retired and lost status badge colors",
+      "body": "The dashboard currently shows retired assets in green and lost assets in blue.\n\nStart at `services/web/src/components/StatusBadge.astro`.\n\n## Acceptance criteria\n- Retired uses `bg-secondary`; lost uses `bg-danger`.\n- Available remains green and assigned remains blue.\n- Unknown status still falls back to gray.\n- The web build passes.\n\nA seeded open PR addresses this issue; use it for the review walkthrough. Do not merge until the demo is complete.",
+      "labels": [
+        "demo:review",
+        "demo:bug"
+      ]
+    },
+    {
+      "key": "make-csv-asset-imports-return-row-level-errors",
+      "title": "Make CSV asset imports return row-level errors",
+      "body": "`POST /imports/assets` stops the import when one downstream request fails. In `services/reporting-svc/app/routers/imports_.py`, the loop calls `raise_for_status()` without a row-level handler.\n\nReproduce with a CSV containing one valid row, one rejected row, and another valid row, using a mocked assets API.\n\n## Acceptance criteria\n- Validate required fields for every row.\n- Continue after a rejected row; do not hide whole-service/network failures.\n- Return imported/skipped counts and row-numbered errors.\n- Keep malformed headers as HTTP 400.\n- Add tests covering valid, rejected, and missing-field rows.",
+      "labels": [
+        "demo:agent",
+        "demo:bug"
+      ]
+    },
+    {
+      "key": "add-meaningful-reporting-service-tests",
+      "title": "Add meaningful reporting service tests",
+      "body": "`services/reporting-svc/tests/` has no executable test suite. Add tests without starting other services.\n\n## Acceptance criteria\n- Cover warranty-window boundaries with deterministic dates and mocked assets.\n- Cover utilization with zero assets and a representative status mix.\n- Cover a valid CSV import using a mocked HTTP transport.\n- Verify unavailable dependencies return a useful error.\n- Run pytest in the Python CI job.",
+      "labels": [
+        "demo:agent",
+        "demo:tests"
+      ]
+    },
+    {
+      "key": "add-combined-type-and-status-filters-to-the-assets-list",
+      "title": "Add combined type and status filters to the assets list",
+      "body": "Extend the assets page and API so a presenter can filter hardware by both type and status, rather than searching a long mixed list.\n\nStart at `services/assets-svc/Endpoints/AssetEndpoints.cs` and `services/web/src/pages/assets/index.astro`.\n\n## Acceptance criteria\n- Support type, status, and their intersection.\n- Preserve existing search behavior and response shape.\n- Preserve selected values in an accessible filter form.\n- Display a useful empty state.\n- Add endpoint tests for combined and empty filters.",
+      "labels": [
+        "demo:agent",
+        "demo:feature"
+      ]
+    },
+    {
+      "key": "replace-concatenated-java-sql-with-bind-parameters",
+      "title": "Replace concatenated Java SQL with bind parameters",
+      "body": "This is an intentionally vulnerable educational scenario with synthetic data. Use the real CodeQL SQL injection alerts in the Security tab.\n\nStart at `UserRepository.findByUsername` in auth-svc and `AuditRepository.search` in audit-svc.\n\n## Acceptance criteria\n- Replace concatenated SQL with prepared statements and bind parameters.\n- Preserve normal lookup and search behavior.\n- Add injection-regression tests without exposing the app publicly.\n- Run Maven verification in both services.\n- Verify CodeQL no longer reports the targeted paths on the fix branch.\n\nKeep this open until the security demo; do not use real data or credentials.",
+      "labels": [
+        "demo:agent",
+        "demo:security"
+      ]
+    },
+    {
+      "key": "modernize-the-python-report-formatting-helpers",
+      "title": "Modernize the Python report formatting helpers",
+      "body": "The teaching module `services/reporting-svc/app/legacy/format_helpers.py` uses older formatting and path idioms.\n\n## Acceptance criteria\n- Use f-strings, pathlib, and explicit type hints where appropriate.\n- Preserve public helper behavior and report response shapes.\n- Add focused compatibility tests for dates and paths.\n- Keep this a small Python-only modernization PR.",
+      "labels": [
+        "demo:agent",
+        "demo:feature"
+      ]
+    },
+    {
+      "key": "code-quality-fixture",
+      "title": "Remove unreachable code from the demo report formatter",
+      "body": "The standalone `services/reporting-svc/app/demo_quality.py` contains a second return that can never execute.\n\n## Acceptance criteria\n- Remove the dead statement without changing the public formatter result.\n- Add focused tests for representative asset tags and statuses.\n- Verify the real CodeQL unreachable-statement finding is resolved.\n- Do not change normal reporting API behavior.",
+      "labels": [
+        "demo:quality",
+        "demo:agent"
+      ]
+    }
+  ],
+  "languages": [
+    "java-kotlin",
+    "csharp",
+    "python",
+    "javascript-typescript"
+  ],
+  "security_paths": [
+    "services/auth-svc/src/main/java/com/contoso/auth/UserRepository.java",
+    "services/audit-svc/src/main/java/com/contoso/audit/AuditRepository.java"
+  ],
+  "baseline_files": {
+    "services/auth-svc/src/main/java/com/contoso/auth/UserRepository.java": "package com.contoso.auth;\n\nimport org.springframework.jdbc.core.JdbcTemplate;\nimport org.springframework.stereotype.Repository;\n\nimport java.util.List;\nimport java.util.Map;\n\n@Repository\npublic class UserRepository {\n\n    private final JdbcTemplate jdbc;\n\n    public UserRepository(JdbcTemplate jdbc) {\n        this.jdbc = jdbc;\n    }\n\n    // INTENTIONAL SQL INJECTION (course exercise target).\n    // The username is concatenated directly into the SQL string.\n    public Map<String, Object> findByUsername(String username) {\n        String sql = \"SELECT id, username, password, display_name, role FROM users WHERE username = '\" + username + \"'\";\n        List<Map<String, Object>> rows = jdbc.queryForList(sql);\n        return rows.isEmpty() ? null : rows.get(0);\n    }\n\n    public Map<String, Object> findById(long id) {\n        List<Map<String, Object>> rows = jdbc.queryForList(\n                \"SELECT id, username, display_name, role FROM users WHERE id = ?\", id);\n        return rows.isEmpty() ? null : rows.get(0);\n    }\n}\n",
+    "services/audit-svc/src/main/java/com/contoso/audit/AuditRepository.java": "package com.contoso.audit;\n\nimport org.springframework.jdbc.core.JdbcTemplate;\nimport org.springframework.stereotype.Repository;\n\nimport java.util.List;\nimport java.util.Map;\n\n@Repository\npublic class AuditRepository {\n\n    private final JdbcTemplate jdbc;\n\n    public AuditRepository(JdbcTemplate jdbc) {\n        this.jdbc = jdbc;\n    }\n\n    public long insert(String actor, String action, String entityType, String entityId, String details) {\n        jdbc.update(\n                \"INSERT INTO audit_events(event_time, actor, action, entity_type, entity_id, details) \" +\n                \"VALUES(datetime('now'), ?, ?, ?, ?, ?)\",\n                actor, action, entityType, entityId, details);\n        Long id = jdbc.queryForObject(\"SELECT last_insert_rowid()\", Long.class);\n        return id == null ? -1 : id;\n    }\n\n    public List<Map<String, Object>> recent(int limit) {\n        return jdbc.queryForList(\n                \"SELECT id, event_time, actor, action, entity_type, entity_id, details \" +\n                \"FROM audit_events ORDER BY id DESC LIMIT ?\", limit);\n    }\n\n    // INTENTIONAL SQL INJECTION (course exercise target).\n    // The query parameter is concatenated directly into the SQL.\n    public List<Map<String, Object>> search(String query) {\n        String sql = \"SELECT id, event_time, actor, action, entity_type, entity_id, details \" +\n                     \"FROM audit_events \" +\n                     \"WHERE action LIKE '%\" + query + \"%' \" +\n                     \"   OR entity_type LIKE '%\" + query + \"%' \" +\n                     \"   OR details LIKE '%\" + query + \"%' \" +\n                     \"ORDER BY id DESC\";\n        return jdbc.queryForList(sql);\n    }\n}\n",
+    "services/web/src/components/StatusBadge.astro": "---\n// StatusBadge.astro — colored Bootstrap badge per asset status.\n// INTENTIONAL BUG (course exercise #8): the colors for \"retired\" and \"lost\"\n// are wrong. \"retired\" should be a neutral gray (bg-secondary) and \"lost\"\n// should be red (bg-danger).\nconst { status } = Astro.props as { status: string };\n\nconst variantByStatus: Record<string, string> = {\n  available: \"bg-success\",\n  assigned:  \"bg-primary\",\n  retired:   \"bg-success\",   // BUG: should be bg-secondary\n  lost:      \"bg-primary\",   // BUG: should be bg-danger\n};\n\nconst variant = variantByStatus[status] ?? \"bg-secondary\";\n---\n<span class={`badge rounded-pill ${variant}`}>{status}</span>\n",
+    "services/reporting-svc/app/demo_quality.py": "\"\"\"Standalone maintainability fixture; not imported by the reporting API.\"\"\"\n\n\ndef format_asset_status(asset_tag: str, status: str) -> str:\n    return f\"{asset_tag}: {status}\"\n    return asset_tag  # Intentional unreachable statement for the quality demo.\n"
+  },
+  "pull_requests": [
+    {
+      "key": "demo-badge-colors",
+      "branch": "demo/badge-colors",
+      "issue_key": "fix-retired-and-lost-status-badge-colors",
+      "title": "Give retired and lost assets the right badge colors",
+      "body": "A small, locally validated fix for the linked demo issue. Leave this PR open for the review walkthrough. Application checks are manual-only, and no security exercise is changed.",
+      "files": {
+        "services/web/src/components/StatusBadge.astro": "---\n// StatusBadge.astro — colored Bootstrap badge per asset status.\nconst { status } = Astro.props as { status: string };\n\nconst variantByStatus: Record<string, string> = {\n  available: \"bg-success\",\n  assigned:  \"bg-primary\",\n  retired:   \"bg-secondary\",\n  lost:      \"bg-danger\",\n};\n\nconst variant = variantByStatus[status] ?? \"bg-secondary\";\n---\n<span class={`badge rounded-pill ${variant}`}>{status}</span>\n"
+      }
+    }
+  ]
+}

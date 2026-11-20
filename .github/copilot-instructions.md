@@ -16,3 +16,5 @@ Use synthetic data only. The default demo branch is `demo-baseline`.
   only when the selected issue or code scanning alert asks for it.
 - Never use real credentials or deploy this intentionally insecure app publicly.
 - Do not merge demo PRs or change another seeded scenario unless asked.
+- Workflows are manual-only. Do not add schedules, push/PR triggers, recurring
+  dependency updates, or automatic agent runs.

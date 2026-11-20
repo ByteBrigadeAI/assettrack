@@ -8,13 +8,23 @@ Contoso is the upstream fictional organization; no customer data is used.
 The MIT license and upstream authorship are preserved.
 The default branch is `demo-baseline`; demo PRs target that branch.
 
+Before a session, run **Actions > Prepare demo assets**. It idempotently
+creates missing issues and review PRs. Select `restore_demo` to restore only
+curated source fixtures and reopen issues after a completed demo. Select
+`scan_security` or `scan_quality` for a fresh real CodeQL scan. The run summary
+links the assets. A labeled issue contains only generated, nonfunctional secret
+patterns; change `secret_revision` for a fresh alert after resolving a prior one.
+No live credentials are created or committed.
+
 The seeded defects in `exercises.md` now have actionable GitHub issues.
 An open badge-color fix PR supports the review demo. GitHub Actions checks
 the .NET, Java, Python, and web components. CodeQL scans all four language
 families, including the intentional Java SQL injection examples.
 Upstream course-branch regeneration workflows are removed.
-There are no scheduled workflows or recurring Dependabot updates. CI and
-CodeQL run only on pushes, pull requests, or manual dispatch.
+There are no scheduled workflows, recurring Dependabot updates, or automatic
+push/PR checks. CI and CodeQL are manual-only: Actions > select a workflow >
+Run workflow > choose the demo branch. Default-setup scanning is disabled
+to avoid duplicate or implicit recurring scans.
 
 Use the supplied Codespaces/devcontainer environment for the full polyglot app.
 The root development scripts are POSIX commands and are not native PowerShell
