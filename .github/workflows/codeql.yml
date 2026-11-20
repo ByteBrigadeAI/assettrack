@@ -2,13 +2,15 @@ name: CodeQL
 on:
   push:
     branches: [demo-baseline]
+    paths: ["services/**"]
   pull_request:
     branches: [demo-baseline]
   workflow_dispatch:
-  schedule:
-    - cron: "23 8 * * 1"
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   analyze:
     runs-on: ubuntu-latest

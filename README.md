@@ -13,6 +13,8 @@ An open badge-color fix PR supports the review demo. GitHub Actions checks
 the .NET, Java, Python, and web components. CodeQL scans all four language
 families, including the intentional Java SQL injection examples.
 Upstream course-branch regeneration workflows are removed.
+There are no scheduled workflows or recurring Dependabot updates. CI and
+CodeQL run only on pushes, pull requests, or manual dispatch.
 
 Use the supplied Codespaces/devcontainer environment for the full polyglot app.
 The root development scripts are POSIX commands and are not native PowerShell

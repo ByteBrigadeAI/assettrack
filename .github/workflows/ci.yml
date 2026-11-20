@@ -2,11 +2,15 @@ name: Application checks
 on:
   push:
     branches: [demo-baseline]
+    paths: ["services/**", ".github/workflows/ci.yml"]
   pull_request:
     branches: [demo-baseline]
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   assets-tests:
     runs-on: ubuntu-latest
