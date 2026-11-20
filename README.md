@@ -1,5 +1,27 @@
 # AssetTrack (Contoso Industries)
 
+## ByteBrigadeAI demo edition
+
+This is `ByteBrigadeAI/assettrack`, adapted from
+[github-samples/contoso-inventory](https://github.com/github-samples/contoso-inventory).
+Contoso is the upstream fictional organization; no customer data is used.
+The MIT license and upstream authorship are preserved.
+The default branch is `demo-baseline`; demo PRs target that branch.
+
+The seeded defects in `exercises.md` now have actionable GitHub issues.
+An open badge-color fix PR supports the review demo. GitHub Actions checks
+the .NET, Java, Python, and web components. CodeQL scans all four language
+families, including the intentional Java SQL injection examples.
+Upstream course-branch regeneration workflows are removed.
+
+Use the supplied Codespaces/devcontainer environment for the full polyglot app.
+The root development scripts are POSIX commands and are not native PowerShell
+commands. Keep forwarded ports private, use synthetic data, and do not deploy
+the intentionally insecure services to a public endpoint.
+
+The organization walkthrough lives in
+[ByteBrigadeAI/demo-hub](https://github.com/ByteBrigadeAI/demo-hub).
+
 > [!IMPORTANT]
 > **Security Warning**
 >

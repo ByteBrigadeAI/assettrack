@@ -1,5 +1,6 @@
 using Contoso.Assets.Data;
 using Dapper;
+using Microsoft.Data.Sqlite;
 using Xunit;
 
 namespace Contoso.Assets.Tests;
@@ -32,6 +33,11 @@ public class AssetsDbTests
         {
             if (File.Exists(dbPath))
             {
+                // Disposed pooled connections still hold the file open on Windows.
+                using (var conn = db.Open())
+                {
+                    SqliteConnection.ClearPool(conn);
+                }
                 File.Delete(dbPath);
             }
         }
