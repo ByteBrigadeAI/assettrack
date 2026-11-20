@@ -9,12 +9,18 @@ The MIT license and upstream authorship are preserved.
 The default branch is `demo-baseline`; demo PRs target that branch.
 
 Before a session, run **Actions > Prepare demo assets**. It idempotently
-creates missing issues and review PRs. Select `restore_demo` to restore only
+creates missing issues and reuses review PRs. New PRs require the organization
+and repository Actions permission plus `create_pull_requests`; otherwise the
+summary provides a comparison link without attempting a forbidden API call.
+Select `restore_demo` to restore only
 curated source fixtures and reopen issues after a completed demo. Select
 `scan_security` or `scan_quality` for a fresh real CodeQL scan. The run summary
 links the assets. A labeled issue contains only generated, nonfunctional secret
 patterns; change `secret_revision` for a fresh alert after resolving a prior one.
 No live credentials are created or committed.
+
+See the [demo hub walkthrough](https://github.com/ByteBrigadeAI/demo-hub) for
+verified issue, PR, security, and quality finding links.
 
 The seeded defects in `exercises.md` now have actionable GitHub issues.
 An open badge-color fix PR supports the review demo. GitHub Actions checks

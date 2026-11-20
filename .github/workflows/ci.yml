@@ -61,10 +61,15 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - run: python -m pip install -e .
+      - run: python -m pip install -e . httpx==0.28.1
         working-directory: services/${{ matrix.service }}
       - run: python -m compileall -q app
         working-directory: services/${{ matrix.service }}
-      - name: Check application import
-        run: python -c "from app.main import app; assert any(route.path == '/health' for route in app.routes)"
+      - name: Check HTTP health endpoint
+        run: >-
+          python -c "from fastapi.testclient import TestClient;
+          from app.main import app;
+          response = TestClient(app).get('/health');
+          assert response.status_code == 200;
+          assert response.json()['status'] == 'ok'"
         working-directory: services/${{ matrix.service }}
