@@ -54,7 +54,7 @@ jobs:
   python-check:
     runs-on: ubuntu-latest
     env:
-      NOTIFICATIONS_DB_PATH: ${{ runner.temp }}/notifications-demo.db
+      NOTIFICATIONS_DB_PATH: /tmp/notifications-demo.db
     strategy:
       matrix:
         service: [reporting-svc, notifications-svc]
